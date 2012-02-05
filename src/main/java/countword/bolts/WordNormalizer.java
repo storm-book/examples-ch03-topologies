@@ -15,7 +15,7 @@ import backtype.storm.tuple.Values;
 public class WordNormalizer implements IRichBolt {
 
 	private OutputCollector collector;
-
+	int numCounterTasks=0;
 	public void cleanup() {}
 
 	/**
@@ -32,10 +32,7 @@ public class WordNormalizer implements IRichBolt {
             word = word.trim();
             if(!word.isEmpty()){
                 word = word.toLowerCase();
-                //Emit the word
-                List a = new ArrayList();
-                a.add(input);
-                collector.emit(a,new Values(word));
+                collector.emit(new Values(word));
             }
         }
         // Acknowledge the tuple
@@ -44,6 +41,7 @@ public class WordNormalizer implements IRichBolt {
 	public void prepare(Map stormConf, TopologyContext context,
 			OutputCollector collector) {
 		this.collector = collector;
+		this.numCounterTasks = context.getComponentTasks("word-counter").size();
 	}
 
 	/**
