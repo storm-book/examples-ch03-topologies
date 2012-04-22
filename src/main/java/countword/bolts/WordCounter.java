@@ -2,13 +2,14 @@ package countword.bolts;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 
-public class WordCounter implements IRichBolt {
+public class WordCounter extends BaseRichBolt {
 
 	Integer id;
 	String name;
@@ -51,9 +52,11 @@ public class WordCounter implements IRichBolt {
 					counters.put(str, c);
 				}
 			}else{
-				str = input.getStringByField("action");
-				if("refreshCache".equals(str))
-					counters.clear();
+				if(input.getSourceStreamId().equals("signals")){
+					str = input.getStringByField("action");
+					if("refreshCache".equals(str))
+						counters.clear();
+				}
 			}
 		//Set the tuple as Acknowledge
 		collector.ack(input);

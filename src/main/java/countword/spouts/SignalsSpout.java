@@ -4,32 +4,19 @@ import java.util.Map;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
-public class SignalsSpout implements IRichSpout{
+public class SignalsSpout extends BaseRichSpout{
 
 	private SpoutOutputCollector collector;
 
-	@Override
-	public boolean isDistributed() {
-		return true;
-	}
-
-	@Override
-	public void ack(Object msgId) {}
-
-	@Override
-	public void close() {}
-
-	@Override
-	public void fail(Object msgId) {}
 
 	@Override
 	public void nextTuple() {
-		collector.emit(new Values("refreshCache"));
+		collector.emit("signals",new Values("refreshCache"));
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {}
@@ -43,7 +30,7 @@ public class SignalsSpout implements IRichSpout{
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("action"));
+		declarer.declareStream("signals",new Fields("action"));
 	}
 
 }

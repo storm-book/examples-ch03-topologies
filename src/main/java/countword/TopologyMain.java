@@ -1,5 +1,6 @@
 package countword;
 
+import countword.spouts.SignalsSpout;
 import countword.spouts.WordReader;
 import countword.bolts.WordCounter;
 import countword.bolts.WordNormalizer;
@@ -15,10 +16,14 @@ public class TopologyMain {
         //Topology definition
 		TopologyBuilder builder = new TopologyBuilder();
 		builder.setSpout("word-reader",new WordReader());
+		builder.setSpout("signals-spout",new SignalsSpout());
 		builder.setBolt("word-normalizer", new WordNormalizer())
 			.shuffleGrouping("word-reader");
+		
 		builder.setBolt("word-counter", new WordCounter(),2)
-			.fieldsGrouping("word-normalizer",new Fields("word"));
+			.fieldsGrouping("word-normalizer",new Fields("word"))
+			.allGrouping("signals-spout","signals");
+
 		
         //Configuration
 		Config conf = new Config();

@@ -8,16 +8,17 @@ import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
-public class WordReader implements IRichSpout {
+public class WordReader extends BaseRichSpout {
 
 	private SpoutOutputCollector collector;
 	private FileReader fileReader;
 	private boolean completed = false;
 	private TopologyContext context;
-	public boolean isDistributed() {return false;}
+
 	public void ack(Object msgId) {
 		System.out.println("OK:"+msgId);
 	}

@@ -5,25 +5,24 @@ import java.util.Map;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
+import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseBasicBolt;
+import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
-public class AdderBolt implements IRichBolt {
+public class AdderBolt<String> extends BaseBasicBolt{
 
 	private static final Object NULL = "NULL";
 	private OutputCollector collector;
 
 	@Override
-	public void cleanup() {
-	}
-
-	@Override
-	public void execute(Tuple input) {
+	public void execute(Tuple input, BasicOutputCollector collector) {
 		//Parse the add expression
-		String[] numbers = input.getString(1).split("\\+");
+		String[] numbers = (String[]) input.getString(1).split("\\+");
 		Integer added = 0;
 		try{
 			if(numbers.length<2){
@@ -31,7 +30,7 @@ public class AdderBolt implements IRichBolt {
 			}
 			for(String num : numbers){
 				//Add each member
-				added += Integer.parseInt(num);
+				added += Integer.parseInt((java.lang.String) num);
 			}
 		}catch(Exception e){
 			//On error emit null
@@ -42,14 +41,7 @@ public class AdderBolt implements IRichBolt {
 	}
 
 	@Override
-	public void prepare(Map stormConf, TopologyContext context,
-			OutputCollector collector) {
-		this.collector = collector;
-	}
-
-	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields("id","result"));
 	}
-
 }
